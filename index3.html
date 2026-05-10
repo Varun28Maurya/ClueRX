@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Meet the Team - Doctordle</title>
+    <!-- Apple first for Safari -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/docturtle-apple-touch-icon.png">
+
+    <!-- PNG sizes - 32x32 first for Chrome -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/docturtle-favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/docturtle-favicon-16x16.png">
+
+    <!-- Manifest for Safari -->
+    <link rel="manifest" href="/static/images/site.webmanifest">
+
+    <!-- ICO for compatibility -->
+    <link rel="icon" type="image/x-icon" href="/static/images/docturtle-favicon.ico">
+
+    <!-- Android Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/images/docturtle-android-chrome-192x192.png">
+    <meta name="description" content="Meet the Doctordle Team - The people behind the diagnosis guessing game.">
+    <meta property="og:title" content="Meet the Team - Doctordle">
+    <meta property="og:description" content="Meet the team behind Doctordle.">
+    <link rel="stylesheet" href="/static/css/style.css?v=5">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "url": "https://doctordle.org/doctordle/team/",
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "Doctordle",
+        "url": "https://doctordle.org",
+        "member": [
+          { "@type": "Person", "name": "Daniel Bellingham", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Jacob Poor", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Alexander Nguyen", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Nick Jones", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Sarah Poor", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Ryan Packham", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Matthew Myers", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Cole Newton", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Jack Lucci", "url": "https://doctordle.org/doctordle/team/" },
+          { "@type": "Person", "name": "Tony Jha", "url": "https://doctordle.org/doctordle/team/" }
+        ]
+      }
+    }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDQY52BTVF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-EDQY52BTVF');
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Hamburger menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBackdrop = document.getElementById('menu-backdrop');
+
+        function closeMenu() {
+          mobileMenuButton.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          if (menuBackdrop) menuBackdrop.classList.remove('active');
+        }
+
+        if (mobileMenuButton && mobileMenu) {
+          // Toggle menu
+          mobileMenuButton.addEventListener('click', function() {
+            mobileMenuButton.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            if (menuBackdrop) menuBackdrop.classList.toggle('active');
+          });
+
+          // Close menu when clicking backdrop
+          if (menuBackdrop) {
+            menuBackdrop.addEventListener('click', closeMenu);
+          }
+        }
+      });
+    </script>
+  </head>
+
+  <body style="background-color: #d6ecfa;">
+  <header>
+  <!-- Hamburger menu button (visible on all screen sizes) -->
+  <button id="mobile-menu-button" class="mobile-menu-button always-visible" aria-label="Menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
+
+  <!-- Menu overlay -->
+  <nav id="mobile-menu" class="mobile-menu">
+    <a href="/index.html" class="mobile-menu-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      Play Doctordle
+    </a>
+    <a href="/index2.html" class="mobile-menu-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M3 4v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6H5c-1.1 0-2 .9-2 2z"/>
+        <path d="M13 2v6h6"/>
+        <path d="M8 12h8"/>
+        <path d="M8 16h8"/>
+      </svg>
+      Archives
+    </a>
+    <a href="/index3.html" class="mobile-menu-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+      </svg>
+      Meet the Team
+    </a>
+  </nav>
+
+  <!-- Backdrop for drawer menu -->
+  <div id="menu-backdrop" class="menu-backdrop"></div>
+
+  <div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+      <h1 class="heading">Doctordle <img src="/static/images/Docturtle.png" alt="Docturtle icon" style="max-height: 1.8em; width: auto; vertical-align: middle; margin-left: -.2em;"></h1>
+    </div>
+    <div class="col-4"></div>
+  </div>
+</header>
+
+  <main>
+    <div class="team-container">
+      <h2 class="team-title">Meet the Team</h2>
+
+      <!-- Team Member 1 - Photo Left -->
+      <div class="team-member">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member1.jpg" alt="Team Member 1"> -->
+          <img src="/static/images/team/DanielB.jpg" alt="Daniel Bellingham">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Daniel Bellingham</h3>
+          <p class="team-role"><strong>Team Lead</strong></p>
+          <p class="team-bio">I’m a medical student from Mooresville, North Carolina. As a father of 2 young boys, I spend most of my free time wrangling them. I also enjoy golf, basketball, tennis, rock climbing, chess, and spending time with my lovely wife (who is helping me write this bio).</p>
+        </div>
+      </div>
+
+      <!-- Team Member 2 - Photo Right -->
+      <div class="team-member reverse">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member2.jpg" alt="Team Member 2"> -->
+          <img src="/static/images/team/JacobP.jpg" alt="Jacob Poor">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Jacob Poor</h3>
+          <p class="team-role"><strong>Developer</strong></p>
+          <p class="team-bio">I work full-time as a developer and project manager, and I'm from Normal, Illinois. I enjoy rock climbing, hiking, and spending time with my little family. I also love house projects.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 3 - Photo Left -->
+      <div class="team-member">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member3.jpg" alt="Team Member 3"> -->
+          <img src="/static/images/team/AlexN.jpg" alt="Alex Nguyen">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Alexander Nguyen</h3>
+          <p class="team-role"><strong>Monday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student from Houston, Texas. In my free time, I enjoy weightlifting, playing various sports, cooking, and learning about history. I also enjoy watching television, especially Game of Thrones and Star Wars, with my girlfriend and my cat, Thrawn.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 4 - Photo Right -->
+      <div class="team-member reverse">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member4.jpg" alt="Team Member 4"> -->
+          <img src="/static/images/team/NickJ.jpg" alt="Nick Jones">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Nick Jones</h3>
+          <p class="team-role"><strong>Tuesday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student from Plano, Texas. When I’m not studying or helping my wife take care of our toddler, I enjoy watching Star Wars, golfing, pickleball, and the occasional video game.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 5 - Photo Left -->
+      <div class="team-member">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member5.jpg" alt="Team Member 5"> -->
+          <img src="/static/images/team/SarahP.jpg" alt="Sarah Poor">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Sarah Poor</h3>
+          <p class="team-role"><strong>Wednesday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student from Idaho Falls, Idaho. When I’m not studying, I enjoy spending time with my husband, son, and 90-pound golden retriever. I also like reading mystery novels!</p>
+        </div>
+      </div>
+
+      <!-- Team Member 6 - Photo Right -->
+      <div class="team-member reverse">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member6.jpg" alt="Team Member 6"> -->
+          <img src="/static/images/team/RyanP.jpg" alt="Ryan Packham">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Ryan Packham</h3>
+          <p class="team-role"><strong>Thursday Clue Maker</strong></p>
+          <p class="team-bio">I am a medical student from Twin Falls, Idaho. I love gardening, skiing, biking, and traveling with my wife and 6-month-old daughter.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 7 - Photo Left -->
+      <div class="team-member">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member7.jpg" alt="Team Member 7"> -->
+          <img src="/static/images/team/MattM.jpg" alt="Matt Myers">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Matthew Myers</h3>
+          <p class="team-role"><strong>Friday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student from Spring, Texas and am married and have a fun 2-year-old son! Hobbies I enjoy include sports, backpacking, and traveling. I played rugby for BYU, and I was a missionary in Denmark for 2 years before college.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 8 - Photo Right -->
+      <div class="team-member reverse">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member8.jpg" alt="Team Member 8"> -->
+          <img src="/static/images/team/ColeN.jpg" alt="Cole Newton">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Cole Newton</h3>
+          <p class="team-role"><strong>Saturday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student from Chandler, Arizona. My hobbies include learning the bass guitar, motorcycles/car restoration, playing golf, and spending time with my wife and dog!</p>
+        </div>
+      </div>
+
+      <!-- Team Member 9 - Photo Left -->
+      <div class="team-member">
+        <div class="team-photo">
+          <!-- Replace with: <img src="/static/images/team/member9.jpg" alt="Team Member 9"> -->
+          <img src="/static/images/team/JackL.jpg" alt="Jack Lucci">
+        </div>
+        <div class="team-info">
+          <h3 class="team-name">Jack Lucci</h3>
+          <p class="team-role"><strong>Sunday Clue Maker</strong></p>
+          <p class="team-bio">I’m a medical student that grew up as a navy brat in various locations throughout the United States and abroad. In my free time I enjoy playing dungeons and dragons, hiking, traveling to national parks, and playing video games.</p>
+        </div>
+      </div>
+
+      <!-- Team Member 10 - Photo Right -->
+      
+
+    </div>
+  </main>
+
+  <p class="disclaimer">*Doctordle is for entertainment only and does not constitute medical advice. Consult a healthcare professional for health concerns.</p>
+  <p class="footer">&copy; 2026 The Doctordle Team <span style="font-size: 1.3em; font-weight: 300; margin: 0 0.5em;">|</span> doctordle.org@gmail.com</p>
+</body>
+</html>
