@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ClueRx</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/docturtle-apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/images/Docturtle.png">
+    <link rel="manifest" href="/static/images/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="/static/images/docturtle-favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/images/docturtle-android-chrome-192x192.png">
+    <meta name="description" content="Choose a medical subject and test your knowledge with ClueRx.">
+    <meta property="og:title" content="ClueRx">
+    <meta property="og:description" content="Choose a medical subject and test your knowledge with ClueRx.">
+
+    <link rel="stylesheet" href="/static/css/style.css?v=19">
+    <script src="/static/js/archive.js?v=12" defer></script>
+    <script>
+function openSubdomain(domain, subdomain) {
+
+    const recordsSection =
+      document.getElementById("records-section");
+
+    recordsSection.innerHTML = "";
+
+    const filtered =
+      getRecordsByCategory(domain, subdomain);
+
+    filtered.forEach((record, index) => {
+
+        const tile = createRecordTile(record, index + 1);
+
+        recordsSection.appendChild(tile);
+
+    });
+
+    recordsSection.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+</script>
+    <script src="/static/js/theme.js?v=1" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBackdrop = document.getElementById('menu-backdrop');
+        const title = document.getElementById('landing-title');
+        const options = document.getElementById('landing-options');
+        const status = document.getElementById('landing-status');
+        const landingCard = document.getElementById('landing-card');
+        let activeGuessId = null;
+        let activeGuessCount = 0;
+        let guessedIds = [];
+
+        const screens = {
+          home: {
+            title: 'Test your IQ',
+            back: false,
+            options: [
+              { label: 'Microbiology', next: 'microbiology' },
+              { label: 'Pharma', next: 'pharma' }
+            ]
+          },
+          microbiology: {
+            title: 'Microbiology',
+            back: true,
+            domain: 'microbiology',
+            options: [
+              { label: 'Bacteria', subdomain: 'bacteria' },
+              { label: 'Virus', subdomain: 'virus' },
+              { label: 'Fungi', subdomain: 'fungi' },
+              { label: 'Parasite', subdomain: 'parasite' }
+            ]
+          },
+          pharma: {
+            title: 'Pharma',
+            back: true,
+            domain: 'pharma',
+            options: [
+              { label: 'Autonomic Drugs', subdomain: 'autonomic-drugs' },
+              { label: 'Anti Microbial', subdomain: 'anti-microbial' },
+              { label: 'Cardio / Renal', subdomain: 'cardio-renal' },
+              { label: 'Psychiatry', subdomain: 'psychiatry' }
+            ]
+          }
+        };
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        window.showQuestion = function (
+   domain,
+   subdomain,
+   selectedRecord = null
+) {
+
+  const record = selectedRecord ||
+    (window.getClueRxRecordForCategory
+      ? window.getClueRxRecordForCategory(domain, subdomain)
+      : null);
+
+  landingCard.classList.add('is-game');
+
+  title.innerHTML = `
+
+  <div class="quiz-header-nav">
+
+    <button
+      type="button"
+      class="quiz-arrow-btn"
+      id="prev-question-btn">
+
+      &#8592;
+
+    </button>
+
+    <span class="quiz-header-text">
+
+      ${
+        domain === 'microbiology'
+          ? 'Guess the Microorganism?'
+          : 'Guess the Drug?'
+      }
+
+    </span>
+
+    <button
+      type="button"
+      class="quiz-arrow-btn"
+      id="next-question-btn">
+
+      &#8594;
+
+    </button>
+
+  </div>
+
+`;
+
+  status.textContent = '';
+  status.hidden = true;
+
+  options.innerHTML = '';
+
+  activeGuessId = null;
+  activeGuessCount = 0;
+  guessedIds = [];
+
+  if (!record) {
+
+    options.innerHTML = `
+      <div class="question-view">
+        <p class="record-question">
+          No question has been added for this category yet.
+        </p>
+      </div>
+    `;
+
+  } else {
+
+    options.innerHTML = `
+      <div class="game-view">
+        <div class="symptom-list">
+          <p class="symptom">${escapeHtml(record.question)}</p>
+
+          <p class="symptom" id="quiz-clue-1"></p>
+          <p class="symptom" id="quiz-clue-2"></p>
+          <p class="symptom" id="quiz-clue-3"></p>
+          <p class="symptom" id="quiz-clue-4"></p>
+          <p class="symptom" id="quiz-clue-5"></p>
+        </div>
+
+        <div class="feedback">
+          <p id="quiz-result">&nbsp;</p>
+        </div>
+
+        <div class="guess-section">
+
+          <input
+            type="text"
+            id="quiz-guess"
+            autocomplete="off"
+            placeholder="${domain === 'microbiology'
+              ? 'Microorganisms...'
+              : 'Drugs...'}">
+
+          <button
+            id="quiz-submit"
+            class="btn_color"
+            type="button"
+            disabled>
+
+            Submit
+
+          </button>
+
+          <div
+            id="quiz-suggestions"
+            class="suggestions">
+          </div>
+
+        </div>
+
+        <div id="quiz-history-list"></div>
+
+      </div>
+    `;
+
+    setupQuiz(record);
+    const filteredRecords =
+  getRecordsByCategory(domain, subdomain);
+
+const currentIndex =
+  filteredRecords.findIndex(r => r.id === record.id);
+
+const prevBtn =
+  document.getElementById('prev-question-btn');
+
+const nextBtn =
+  document.getElementById('next-question-btn');
+
+nextBtn.addEventListener('click', function () {
+
+  if (currentIndex <
+      filteredRecords.length - 1) {
+
+    showQuestion(
+      domain,
+      subdomain,
+      filteredRecords[currentIndex + 1]
+    );
+
+  }
+
+});
+const nextQuestionButton =
+  document.createElement('button');
+
+nextQuestionButton.className =
+  'landing-option landing-back';
+
+nextQuestionButton.type = 'button';
+
+nextQuestionButton.textContent =
+  'Next Question';
+
+if (currentIndex >= filteredRecords.length - 1) {
+
+  nextQuestionButton.disabled = true;
+
+  nextQuestionButton.style.opacity = '0.6';
+
+  nextQuestionButton.style.cursor =
+    'not-allowed';
+
+}
+
+nextQuestionButton.addEventListener('click', function () {
+
+  if (currentIndex <
+      filteredRecords.length - 1) {
+
+    showQuestion(
+      domain,
+      subdomain,
+      filteredRecords[currentIndex + 1]
+    );
+
+  }
+
+});
+
+options.appendChild(nextQuestionButton);
+
+prevBtn.disabled = currentIndex <= 0;
+nextBtn.disabled =
+  currentIndex >= filteredRecords.length - 1;
+
+prevBtn.addEventListener('click', function () {
+
+  if (currentIndex > 0) {
+
+    showQuestion(
+      domain,
+      subdomain,
+      filteredRecords[currentIndex - 1]
+    );
+
+  }
+
+});
+
+nextBtn.addEventListener('click', function () {
+
+  if (currentIndex <
+      filteredRecords.length - 1) {
+
+    showQuestion(
+      domain,
+      subdomain,
+      filteredRecords[currentIndex + 1]
+    );
+
+  }
+
+});
+  }
+
+  const button = document.createElement('button');
+
+  button.className =
+    'landing-option landing-back';
+
+  button.type = 'button';
+
+  button.textContent = 'Back to Records';
+  button.style.marginTop = '1rem';
+
+button.addEventListener('click', function() {
+
+    title.textContent =
+      subdomain.replace(/-/g, ' ') + ' Records';
+
+    status.textContent = '';
+    status.hidden = true;
+
+    options.innerHTML = `
+      <div id="records-section"
+           class="archive-grid"></div>
+    `;
+
+    openSubdomain(domain, subdomain);
+
+    const backButton =
+      document.createElement('button');
+
+    backButton.className =
+      'landing-option landing-back';
+
+    backButton.type = 'button';
+
+    backButton.textContent = 'Back';
+
+    backButton.addEventListener('click', function () {
+
+      renderScreen(domain);
+
+    });
+
+    options.appendChild(backButton);
+
+});
+
+  options.appendChild(button);
+}
+
+        function setupQuiz(record) {
+          const input = document.getElementById('quiz-guess');
+          const suggestions = document.getElementById('quiz-suggestions');
+          const submit = document.getElementById('quiz-submit');
+          const result = document.getElementById('quiz-result');
+          const history = document.getElementById('quiz-history-list');
+          const answers = (window.cluerxRecords || []).filter(answerRecord =>
+  window.normalizeClueRxCategory(answerRecord.domain) ===
+  window.normalizeClueRxCategory(record.domain) &&
+
+  window.normalizeClueRxCategory(answerRecord.subdomain) ===
+  window.normalizeClueRxCategory(record.subdomain)
+);
+
+          function updateSubmit() {
+            submit.disabled = !activeGuessId;
+            submit.style.opacity = activeGuessId ? '1' : '0.6';
+            submit.style.cursor = activeGuessId ? 'pointer' : 'not-allowed';
+          }
+
+          function clearSuggestions() {
+            suggestions.innerHTML = '';
+            suggestions.style.display = 'none';
+          }
+
+         function showResult(message, type, showSummary = false) {
+
+  result.innerHTML = `
+
+    <div class="result-row">
+
+      <span class="result-label ${type}">
+        ${escapeHtml(message)}
+      </span>
+
+      ${
+        showSummary
+          ? `
+            <button
+              type="button"
+              class="inline-summary-btn">
+
+              Summary
+
+            </button>
+          `
+          : ''
+      }
+
+    </div>
+
+  `;
+
+  if (showSummary) {
+
+    const summaryBtn =
+      result.querySelector('.inline-summary-btn');
+
+    summaryBtn.addEventListener('click', function () {
+
+      showSummaryCard(record.answer);
+
+    });
+
+  }
+
+}
+
+          function renderHistory(name, type) {
+            const item = document.createElement('div');
+            item.className = 'guess-history-item ' + type;
+            item.innerHTML = `
+              <span class="guess-history-name">${escapeHtml(name)}</span>
+              <span class="guess-history-icon">${type === 'correct' ? '&#10003;' : '&#10007;'}</span>
+            `;
+            history.appendChild(item);
+          }
+
+          function revealClue(index) {
+            const clue = record.clues[index];
+            const clueElement = document.getElementById('quiz-clue-' + (index + 1));
+            if (!clue || !clueElement || clueElement.textContent.trim()) return;
+            clueElement.textContent = clue;
+            clueElement.classList.remove('flip_in');
+            void clueElement.offsetWidth;
+            clueElement.classList.add('flip_in', 'hints_shown');
+          }
+
+          function revealAllClues() {
+            record.clues.forEach(function(_, index) {
+              revealClue(index);
+            });
+          }
+
+          input.addEventListener('input', function() {
+            const query = input.value.trim().toLowerCase();
+            activeGuessId = null;
+            updateSubmit();
+            suggestions.innerHTML = '';
+
+            if (!query) {
+              clearSuggestions();
+              return;
+            }
+
+            const seenAnswers = new Set();
+            answers.forEach(function(answerRecord) {
+              const answerName = answerRecord.answer || '';
+              const normalizedName = answerName.toLowerCase();
+              if (!normalizedName.includes(query) || seenAnswers.has(normalizedName)) return;
+              seenAnswers.add(normalizedName);
+
+              const item = document.createElement('div');
+              item.className = 'suggestion-item';
+
+              if (guessedIds.includes(answerRecord.id)) {
+                item.textContent = answerName + ' (already guessed)';
+                item.style.color = '#999';
+                item.style.cursor = 'not-allowed';
+              } else {
+                item.textContent = answerName;
+                item.addEventListener('click', function() {
+                  input.value = answerName;
+                  activeGuessId = answerRecord.id;
+                  clearSuggestions();
+                  updateSubmit();
+                });
+              }
+
+              suggestions.appendChild(item);
+            });
+
+            suggestions.style.display = suggestions.children.length ? 'block' : 'none';
+          });
+
+          function showSummaryCard(answerText) {
+
+  const gameView =
+    document.querySelector('.game-view');
+
+  const symptomList =
+    document.querySelector('.symptom-list');
+
+  const guessSection =
+    document.querySelector('.guess-section');
+
+  const history =
+    document.getElementById('quiz-history-list');
+
+  const feedback =
+    document.querySelector('.feedback');
+
+  const existing =
+    document.querySelector('.record-summary-box');
+
+  if (existing) {
+
+    existing.remove();
+
+    symptomList.style.display = '';
+    guessSection.style.display = '';
+    history.style.display = '';
+    feedback.style.display = '';
+
+    return;
+  }
+
+  symptomList.style.display = 'none';
+  guessSection.style.display = 'none';
+  history.style.display = 'none';
+  feedback.style.display = 'none';
+
+  const box = document.createElement('div');
+
+  box.className = 'record-summary-box';
+
+  box.innerHTML = `
+
+    <h3 class="record-summary-title">
+      Correct Answer
+    </h3>
+
+    <p class="record-answer-text">
+      ${escapeHtml(answerText)}
+    </p>
+
+    <h3 class="record-summary-title">
+      Summary
+    </h3>
+
+    <p class="record-summary-text">
+      ${escapeHtml(record.summary)}
+    </p>
+
+    <button
+      type="button"
+      class="btn_color"
+      id="close-summary-btn"
+      style="margin-top:1rem; width:100%;">
+
+      Back to Question
+
+    </button>
+
+  `;
+
+  gameView.appendChild(box);
+
+  document
+    .getElementById('close-summary-btn')
+    .addEventListener('click', function () {
+
+      box.remove();
+
+      symptomList.style.display = '';
+      guessSection.style.display = '';
+      history.style.display = '';
+      feedback.style.display = '';
+
+    });
+}
+
+          submit.addEventListener('click', function() {
+            if (!activeGuessId) return;
+
+            const guessedRecord = answers.find(function(answerRecord) {
+              return answerRecord.id === activeGuessId;
+            });
+            const guessedName = guessedRecord ? guessedRecord.answer : input.value;
+
+            guessedIds.push(activeGuessId);
+            activeGuessCount += 1;
+
+            if (activeGuessId === record.id) {
+
+  showResult(
+  'Correct! ' + record.answer,
+  'correct',
+  true
+);
+
+  renderHistory(guessedName, 'correct');
+
+  revealAllClues();
+
+
+  input.disabled = true;
+  submit.disabled = true;
+
+  clearSuggestions();
+
+  return;
+}
+
+showResult('Incorrect!', 'incorrect');
+
+renderHistory(guessedName, 'wrong');
+
+revealClue(activeGuessCount - 1);
+
+if (activeGuessCount >= 6) {
+
+  showResult(
+  'Game Over! The correct answer was ' +
+  record.answer + '.',
+  'incorrect',
+  true
+);
+
+  revealAllClues();
+
+
+  input.disabled = true;
+  submit.disabled = true;
+}
+
+            input.value = '';
+            activeGuessId = null;
+            clearSuggestions();
+            updateSubmit();
+          });
+
+          input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+              submit.click();
+            }
+          });
+
+          updateSubmit();
+        }
+
+        function renderScreen(screenName) {
+          const screen = screens[screenName];
+          landingCard.classList.remove('is-game');
+          title.textContent = screen.title;
+          status.textContent = '';
+          status.hidden = false;
+          options.innerHTML = '';
+
+          screen.options.forEach(function(option) {
+            const button = document.createElement('button');
+            button.className = 'landing-option';
+            button.type = 'button';
+            if (screenName === 'home') {
+
+  button.innerHTML = `
+    <span class="landing-option-content">
+
+      <img
+        src="${
+          option.label === 'Microbiology'
+            ? '/static/images/microb.png'
+            : '/static/images/phramacy.png'
+        }"
+        class="landing-option-image"
+        alt="${option.label} icon">
+
+      <span>${option.label}</span>
+
+    </span>
+  `;
+
+} else {
+
+  button.textContent = option.label;
+
+}
+            button.addEventListener('click', function() {
+              if (option.next) {
+                renderScreen(option.next);
+                return;
+              }
+
+              if (option.subdomain) {
+
+  title.textContent = option.label + ' Records';
+
+  status.textContent = '';
+  status.hidden = true;
+
+  options.innerHTML = `
+    <div id="records-section" class="archive-grid"></div>
+  `;
+
+  openSubdomain(screen.domain, option.subdomain);
+
+  const backButton = document.createElement('button');
+
+  backButton.className =
+    'landing-option landing-back';
+
+  backButton.type = 'button';
+
+  backButton.textContent = 'Back';
+
+  backButton.addEventListener('click', function () {
+
+    renderScreen(screen.domain);
+
+  });
+
+  options.appendChild(backButton);
+
+  return;
+}
+
+              status.textContent = option.label + ' quiz is selected.';
+            });
+
+            options.appendChild(button);
+          });
+
+          if (screen.back) {
+            const button = document.createElement('button');
+            button.className = 'landing-option landing-back';
+            button.type = 'button';
+            button.textContent = 'Back';
+            button.addEventListener('click', function() {
+              renderScreen('home');
+            });
+            options.appendChild(button);
+          }
+        }
+
+        function closeMenu() {
+          mobileMenuButton.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          if (menuBackdrop) menuBackdrop.classList.remove('active');
+        }
+
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener('click', function() {
+            mobileMenuButton.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            if (menuBackdrop) menuBackdrop.classList.toggle('active');
+          });
+
+          if (menuBackdrop) {
+            menuBackdrop.addEventListener('click', closeMenu);
+          }
+        }
+
+        renderScreen('home');
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcome-quote-modal');
+  const closeBtn = document.getElementById('close-quote-modal');
+
+  const hasSeenQuote = sessionStorage.getItem('cluerx-quote-seen');
+
+  if (!hasSeenQuote) {
+    setTimeout(() => {
+      modal.classList.add('show');
+    }, 500);
+
+    sessionStorage.setItem('cluerx-quote-seen', 'true');
+  }
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+});
+    </script>
+    <style>
+      .landing-card {
+        display: grid;
+        gap: 1.1rem;
+        max-width: 620px;
+        padding: clamp(1.4rem, 5vw, 2.6rem);
+      }
+
+      .landing-card.is-game {
+        max-width: 680px;
+        gap: 1rem;
+      }
+
+      .landing-top {
+        display: grid;
+        justify-items: center;
+      }
+
+      .landing-title {
+        margin: 0;
+        color: var(--brand-dark);
+        font-size: clamp(2.6rem, 11vw, 5rem);
+        font-weight: 850;
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .landing-card.is-game .landing-title {
+        font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+        line-height: 1.15;
+      }
+
+      .landing-back {
+        border-color: var(--brand);
+        background: linear-gradient(180deg, var(--brand) 0%, var(--brand-dark) 100%);
+        color: #fff;
+        box-shadow: 0 9px 18px rgba(22, 134, 92, 0.24);
+      }
+
+      .landing-back:hover,
+      .landing-back:focus-visible {
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(22, 134, 92, 0.3);
+      }
+
+      .landing-options {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .landing-card.is-game .landing-options {
+        display: block;
+      }
+
+      .game-view {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .game-view .symptom-list {
+        margin-bottom: 0;
+      }
+
+      .game-view .feedback {
+        min-height: 3rem;
+      }
+
+      .game-view .guess-section {
+        margin-top: 0;
+      }
+
+      .game-view + .landing-back {
+        margin-top: 1rem;
+      }
+
+      .question-view {
+        display: grid;
+        text-align: left;
+      }
+
+      .question-view .record-card {
+        margin: 0;
+      }
+
+      .question-view .record-number {
+        border-radius: var(--radius);
+      }
+
+      .landing-option {
+        min-height: clamp(4.6rem, 14vw, 6rem);
+        width: 100%;
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        color: var(--ink);
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+        font-size: clamp(1.65rem, 7vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: 0;
+        transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+      }
+
+      .landing-option:hover,
+      .landing-option:focus-visible {
+        border-color: var(--brand);
+        color: var(--brand-dark);
+        box-shadow: var(--shadow);
+        outline: none;
+        transform: translateY(-2px);
+      }
+
+      .landing-option:active {
+        transform: translateY(0);
+      }
+
+      .landing-status {
+        min-height: 1.6rem;
+        margin: 0;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      html[data-theme="dark"] .landing-option {
+        background: rgba(19, 35, 29, 0.97);
+        color: var(--ink);
+      }
+
+      html[data-theme="dark"] .landing-back {
+        background: linear-gradient(180deg, var(--brand) 0%, #2d8f66 100%);
+        color: #08130f;
+      }
+
+      html[data-theme="dark"] .landing-option:hover,
+      html[data-theme="dark"] .landing-option:focus-visible {
+        color: var(--brand-dark);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <button id="mobile-menu-button" class="mobile-menu-button always-visible" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav id="mobile-menu" class="mobile-menu">
+        <a href="/index.html" class="mobile-menu-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          Play
+        </a>
+        <a href="/index2.html" class="mobile-menu-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 4v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6H5c-1.1 0-2 .9-2 2z"/>
+            <path d="M13 2v6h6"/>
+            <path d="M8 12h8"/>
+            <path d="M8 16h8"/>
+          </svg>
+          Stats
+        </a>
+        <a href="/index3.html" class="mobile-menu-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          </svg>
+          Creator
+        </a>
+      </nav>
+
+      <div id="menu-backdrop" class="menu-backdrop"></div>
+
+      <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+<h1 class="heading">
+  ClueRx
+
+  <span style="
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:2.2em;
+    height:2.2em;
+    background:white;
+    border-radius:50%;
+    margin-left:0.4em;
+  ">
+
+    <img 
+      src="/static/images/Docturtle.png"
+      alt="Docturtle icon"
+      style="
+        max-height:1.8em;
+        width:auto;
+        display:block;
+      ">
+
+  </span>
+</h1>        </div>
+        <div class="col-4 header-actions">
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+            <span class="theme-toggle-icon" aria-hidden="true">&#9790;</span>
+            <span class="theme-toggle-text">Dark</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="card-container">
+        <section class="card landing-card" id="landing-card" aria-labelledby="landing-title">
+          <div class="landing-top">
+            <h2 class="landing-title" id="landing-title">Test your IQ</h2>
+          </div>
+          <div class="landing-options" id="landing-options" aria-label="Choose a category"></div>
+          <p class="landing-status" id="landing-status" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="review-footer">
+
+  <h3 class="review-title">
+    Share your feedback
+  </h3>
+
+  <form
+    action="https://formspree.io/f/mpqbgndr"
+    method="POST"
+    class="review-form"
+  >
+
+    <textarea
+      name="message"
+      placeholder="Write your thoughts about ClueRx..."
+      required
+    ></textarea>
+
+    <button
+      type="submit"
+      class="btn_color">
+
+      Submit
+
+    </button>
+
+  </form>
+
+</footer>
+
+    <p class="disclaimer">ClueRx provides academic medical information for learning purposes and should not replace professional medical advice.</p>
+    <p class="footer">&copy; 2026 The ClueRx Team <span style="font-size: 1.3em; font-weight: 300; margin: 0 0.5em;">|</span> ClueRx.org@gmail.com</p>
+
+
+    <!-- Welcome Quote Modal -->
+<div id="welcome-quote-modal" class="welcome-quote-modal">
+  <div class="welcome-quote-box">
+    <button id="close-quote-modal" class="welcome-close-btn">×</button>
+
+    <p class="welcome-quote-text">
+      Nobody is <span>good</span> at the start.<br>
+      Nobody is <span>bad</span> after 100 attempts.
+    </p>
+  </div>
+</div>
+  </body>
+</html>
